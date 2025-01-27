@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Video Downloader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #videoContainer {
+            margin-top: 20px;
+        }
+        #videoDetails {
+            margin-top: 10px;
+        }
+        video {
+            max-width: 100%;
+        }
+        .metadata {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Telegram Video Downloader</h1>
+    <input type="text" id="videoUrl" placeholder="Enter Telegram video URL" size="50">
+    <button onclick="fetchVideoDetails()">Fetch Video</button>
+    <div id="videoContainer"></div>
+
+    <script>
+        async function fetchVideoDetails() {
+            const videoUrl = document.getElementById('videoUrl').value;
+            const response = await fetch('/fetch-video-details', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url: videoUrl })
+            });
+            const data = await response.json();
+            displayVideoDetails(data);
+        }
+
+        function displayVideoDetails(data) {
+            const videoContainer = document.getElementById('videoContainer');
+            videoContainer.innerHTML = `
+                <video controls>
+                    <source src="${data.videoUrl}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <div id="videoDetails" class="metadata">
+                    <p><strong>Title:</strong> ${data.title}</p>
+                    <p><strong>File Size:</strong> ${data.fileSize} MB</p>
+                    <img src="${data.thumbnailUrl}" alt="Thumbnail">
+                    <br>
+                    <a href="${data.videoUrl}" download="telegram_video.mp4">Download Video</a>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
